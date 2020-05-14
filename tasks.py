@@ -2,7 +2,7 @@ from config import huey
 import time
 
 
-huey.task()
+@huey.task()
 def startjob(word,amount,wait):
     x = 0
     while x < amount:
