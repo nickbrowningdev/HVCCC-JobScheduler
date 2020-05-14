@@ -9,3 +9,5 @@ def startjob(word,amount,wait):
         print(word)
         time.sleep(wait)
         x += 1
+
+
