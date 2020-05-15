@@ -9,5 +9,4 @@ goto :a
 
 :b
 Echo I have finished.
-pause
 exit /b
