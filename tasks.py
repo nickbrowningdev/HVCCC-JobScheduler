@@ -3,7 +3,7 @@ import time
 import os
 
 
-@huey.task()
+
 def startJob(word,amount,wait):
     x = 0
     while x < amount:
@@ -13,11 +13,15 @@ def startJob(word,amount,wait):
     print('I have finished.')
 
 
+queueStartJob = huey.task()(startJob)
 
-@huey.task()
+
+
 def startJobBatch(file,word,amount,wait):
     os.system((file) + " " + (word) + " " + (amount) + " " + (wait))
 
+
+queueStartJobBatch = huey.task()(startJobBatch)
 
 
 
