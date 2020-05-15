@@ -27,7 +27,7 @@ def startJobBatch(file,word,amount,wait):
 
 #  startJob('Hello', 5, 5)
 
-#  startJobBatch('JobBatch.bat', 'Hi', '4', '10')
+#  startJobBatch('JobBatch.bat', 'Hi', '5', '10')
 
 #  startJob('100', 2, 2, priority=100)
 #  startJob('75', 2, 2, priority=75)
