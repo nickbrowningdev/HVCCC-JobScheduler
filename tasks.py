@@ -1,42 +1,103 @@
 from config import huey
 import time
 import os
+from job import *
 
 
+#Huey... Used to queue jobs.
 
-def startJob(word,amount,wait):
-    x = 0
-    while x < amount:
-        print(word)
-        time.sleep(wait)
-        x += 1
-    print('I have finished.')
+@huey.task()
+def queueSim(releaseFolder, inputFile, seed):
+    print(releaseFolder)
+    print(inputFile)
+    print(seed)
+    #os.system((batchFile) +" "+  (inputFile))
 
-
-queueStartJob = huey.task()(startJob)
-
-
-
-def startJobBatch(file,word,amount,wait):
-    os.system((file) + " " + (word) + " " + (amount) + " " + (wait))
-
-
-queueStartJobBatch = huey.task()(startJobBatch)
+@huey.task()
+def queuePost(releasefolderlocation, outputfolderlocation, seed):
+    print(releasefolderlocation)
+    print(outputfolderlocation)
+    print(seed)
+    #os.system("Python " + (releasefolderlocation) + " -f " + (outputfolderlocation))
 
 
 
 
 
-#Demo tasks
+def dataSimulationJob(self, releasefolderlocation, inputfilelocation):
+    self.set_releasefolderlocation(releasefolderlocation)
+    self.set_inputfilelocation(inputfilelocation)
 
-#  startJob('Hello', 5, 5)
+def queueSimJob(self):
+    releaseFolder = self.releasefolderlocation
+    inputFile = self.inputfilelocation
+    seedList = self.seeds
+    for i in seedList:
+        seed = eval(i)
+        queueSim(releaseFolder,inputFile, seed)
 
-#  startJobBatch('JobBatch.bat', 'Hi', '5', '10')
 
-#  startJob('100', 2, 2, priority=100)
-#  startJob('75', 2, 2, priority=75)
-#  startJob('6', 2, 2, priority=6)
 
-#  startJobBatch('JobBatch.bat', 'Batch100', '2', '2', priority=100)
-#  startJobBatch('JobBatch.bat', 'Batch80', '2', '2', priority=80)
-#  startJobBatch('JobBatch.bat', 'Batch5', '2', '2', priority=5)
+def dataPostJob(self, releasefolderlocation, outputfolderlocation): 
+    self.set_releasefolderlocation(releasefolderlocation)
+    self.set_outputfolderlocation(outputfolderlocation)
+    
+def queuePostJob(self):
+    releasefolderlocation = self.releasefolderlocation
+    outputfolderloaction = self.outputfolderlocation
+    seedList = self.seeds
+    for i in seedList:
+        seed = eval(i)
+        queuePost(releasefolderlocation, outputfolderloaction, seed)
+
+
+
+
+def dataSimWithPostJob(self, releasefolderlocation, inputfileloaction, outputfolderlocation): 
+    self.set_releasefolderlocation(releasefolderlocation)
+    self.set_inputfilelocation(inputfileloaction)
+    self.set_outputfolderlocation(outputfolderlocation)
+
+def queueSimWithPostJob(self):
+    releasefolderlocation = self.releasefolderlocation
+    inputFile = self.inputfilelocation
+    outputfolderloaction = self.outputfolderlocation
+    seedList = self.seeds
+    for i in seedList:
+        seed = eval(i)
+        queueSim(releasefolderlocation,inputFile, seed)
+        queuePost(releasefolderlocation, outputfolderloaction, seed)
+
+
+
+def dataSeeds(self, seeds):
+    r = seeds
+    seeds = r.split(',')
+    seedList = []
+    lastSeed = eval(seeds[len(seeds)-1])
+    if (len(seeds) == 4) and (lastSeed == 0):
+        start = eval(seeds[0])
+        stop = eval(seeds[1])
+        step = eval(seeds[2])
+        for x in range(start,stop+1,step):
+            xList = str(x)
+            seedList.append(xList)
+        self.set_seeds(seedList)
+    elif (len(seeds) == 3) and (lastSeed == 0):
+        start = eval(seeds[0])
+        stop = eval(seeds[1])
+        for x in range(start,stop+1):
+            xList = str(x)
+            seedList.append(xList)
+        self.set_seeds(seedList)
+    else:
+         self.set_seeds(seeds)
+
+
+def printSeeds(self):
+    seedList = self.seeds
+    for i in seedList:
+        seed = eval(i)
+        print(seed)
+
+    

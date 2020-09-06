@@ -34,7 +34,8 @@ class Job(ABC):
         super().__init__()
     
     def create_id(self):
-        uuid.uuid1()
+        id = uuid.uuid1()
+        return id   #Added...
         
     def add_param(self, name, param):
         self.params.add_param(name, param)
@@ -68,6 +69,7 @@ class SimulationJob(Job):
     def set_seeds(self, seeds):
         self.seeds = seeds
 
+
 class PythonScriptJob(Job):
     
     name = "Python Script Job"
@@ -82,7 +84,7 @@ class PythonScriptJob(Job):
     def set_scriptlocation(self, scriptlocation):
         self.scriptlocation = scriptlocation
 
-    def set_scriptparams(self, scriptparamstring):
+    def set_scriptparamstring(self, scriptparamstring):
         self.scriptparamstring = scriptparamstring
         
 
@@ -117,6 +119,7 @@ class PostprocessingJob(Job):
         
     def set_warmup(self, warmup):
         self.warmup = warmup
+
         
 class SimulationWithPostprocessingJob(SimulationJob, PostprocessingJob):
 
@@ -131,6 +134,10 @@ class SimulationWithPostprocessingJob(SimulationJob, PostprocessingJob):
         
     def set_allsimsfirst(self, allsimsfirst):
         self.allsimsfirst = allsimsfirst
+
         
 def get_job_types():
     return [SimulationJob, PostprocessingJob, SimulationWithPostprocessingJob]
+
+
+

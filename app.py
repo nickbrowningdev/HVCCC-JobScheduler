@@ -10,7 +10,7 @@ class Hub():
         
         self.job_handler = JobHandler()
         
-    def get_job_types():
+    def get_job_types(self):
         return self.job_handler.get_job_types()
         
  
