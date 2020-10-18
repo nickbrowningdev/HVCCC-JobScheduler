@@ -30,8 +30,10 @@ class Job(ABC):
             self.params = JobParams()
             self.id = self.create_id()
         self.timestamp_submit = None
+        self.priority = None
         self.creator = None
         super().__init__()
+        self.add_param("Priority", Param(type=int, setter=self.set_priority))
     
     def create_id(self):
         id = uuid.uuid1()
@@ -45,6 +47,10 @@ class Job(ABC):
         
     def get_params(self):
         return self.params
+
+    def set_priority(self, priority):
+        self.priority = priority
+
     
 
 class SimulationJob(Job):
@@ -52,10 +58,10 @@ class SimulationJob(Job):
     name = "Simulation Job"
 
     def __init__(self):
-        super().__init__()
         self.releasefolderlocation = None
         self.inputfilelocation = None
         self.seeds = None
+        super().__init__()
         self.add_param("Release folder location", Param(type=str, setter=self.set_releasefolderlocation))
         self.add_param("Input file location", Param(type=str, setter=self.set_inputfilelocation))
         self.add_param("Seeds", Param(type=str, setter=self.set_seeds))
@@ -128,7 +134,7 @@ class SimulationWithPostprocessingJob(SimulationJob, PostprocessingJob):
     def __init__(self):
         SimulationJob.__init__(self)
         PostprocessingJob.__init__(self)
-        self.all_sims_first = False
+        self.allsimsfirst = False
         self.add_param("All sims first", Param(type=bool, setter=self.set_allsimsfirst))
         #self.remove_param('Output folder location')
         

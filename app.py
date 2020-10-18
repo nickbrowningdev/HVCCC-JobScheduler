@@ -1,7 +1,7 @@
-from jobhandler import JobHandler
 from userinterface import CommandLineInterface
 from confighandler import ConfigHandler
 import argparse
+from jobhandler import *
 
 
 class Hub():
