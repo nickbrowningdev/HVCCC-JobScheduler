@@ -1,23 +1,33 @@
 from huey.signals import SIGNAL_COMPLETE, SIGNAL_ERROR
 import os
 from huey import SqliteHuey
+import subprocess
+
+
+
 
 huey = SqliteHuey('main')
 
 
 
-##startup_consumer():
+#The following functions are used to startup/shutdown the Huey consumer console.
+
+def startup_consumer():
+    p = subprocess.Popen("huey_consumer queuemanager.huey", creationflags=subprocess.CREATE_NEW_CONSOLE)
+
+
 ##shutdown_consumer():
 ##force_shutdown_consumer():
 
-##How to pass/set a task name for each individual task rather than a common name
-
-##Also check create_rep_folder_and_files in jobreader for questions on railUtilisation
 
 
 
 
-#Methods in this file are used to access the huey queue.
+
+
+
+#The following functions are used to give feedback on tasks in the queue.
+
 @huey.signal(SIGNAL_COMPLETE)
 def task_completed(signal, task):
     print('%s - %s - %s' % (signal, task.name, task))
@@ -30,18 +40,27 @@ def task_error(signal, task, exc=None):
     print('task error.')
 
 
-    
+def show_jobs_in_queue():
+    jobs = huey.pending()
+    for i in jobs:
+        print(i)
+        print('Priority= ' + str(i.priority))
+
     
 
 
-@huey.task(name='Simulation Job')
+
+
+#The following functions are called by tasks in jobhandler and are used to put tasks in the queue.
+
+@huey.task(name='Simulation Job') #Queue Simulation Jobs in the huey queue.
 def queue_simulation_job(releaseFolderLocation, subfolder, folder, seedList):
         for i in seedList:
             seed = eval(i)
             run_simulation_job(releaseFolderLocation, subfolder, folder, seed)
 
 
-@huey.task(name='Postprocessing Job')
+@huey.task(name='Postprocessing Job')#Queue Postproccesing Jobs in the huey queue.
 def queue_postprocessing_job(releaseFolderLocation, outputFolderLocation, seedList):
         for i in seedList:
             seed = eval(i)
@@ -72,11 +91,7 @@ def run_postprocessing_job(releaseFolderLocation, outputFolderLocation, seed):
     os.system("Python " + (releaseFolderLocation + r"\LogReaders\processlogs_release.py") + " -f " + (outputFolderLocation) + '\\' + str(seed))
 
 
-def show_jobs_in_queue():
-    jobs = huey.pending()
-    for i in jobs:
-        print(i)
-        print('Priority= ' + str(i.priority))
+
 
 
 

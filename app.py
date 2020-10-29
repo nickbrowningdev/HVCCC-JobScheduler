@@ -1,14 +1,15 @@
 from userinterface import CommandLineInterface
 from confighandler import ConfigHandler
 import argparse
-from jobhandler import *
+import jobhandler 
+
 
 
 class Hub():
 
     def __init__(self, config_file_path):
         
-        self.job_handler = JobHandler()
+        self.job_handler = jobhandler.JobHandler()
         
     def get_job_types(self):
         return self.job_handler.get_job_types()
@@ -25,5 +26,4 @@ if __name__ == "__main__":
     parser.add_argument('-c', '--config', required=False, default="", help="Path to config file")
     args = parser.parse_args()
     run(args.config)
-    
     

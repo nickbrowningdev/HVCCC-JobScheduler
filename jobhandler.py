@@ -9,18 +9,14 @@ import sys
 import time
 import tkinter as tk
 from tkinter import filedialog, messagebox
-from queuemanager import *
-from job import *
-
-
+import job
+import queuemanager
 
 
 #J1 = SimulationWithPostprocessingJob()
 #simulation_job_data(J1, r"C:\Users\enjib\Desktop\ewocc_demo_v48.3", r"C:\Users\enjib\Desktop\ewocc_demo_v48.3\Inputs\scenario1.xml")
 #set_seeds(J1,'1,1,0')
-#start_simulation_with_postprocessing_job(J1) 
-
-
+#start_simulation_with_postprocessing_job(J1)
 
 
 class JobHandler():
@@ -32,76 +28,25 @@ class JobHandler():
         return job.get_job_types()
 
 
-def simulation_job_data(self, releaseFolderLocation, inputFileLocation): 
+
+
+#The following functions are used to set data for specific tasks.
+
+def simulation_job_data(task, releaseFolderLocation, inputFileLocation): 
     #Used to set nessasary params for a Simulation job to be completed.
     #Simulation jobs may also have singluar params set via the set_'param' methods.
-    self.set_releasefolderlocation(releaseFolderLocation)
-    self.set_inputfilelocation(inputFileLocation)
+    task.set_releasefolderlocation(releaseFolderLocation)
+    task.set_inputfilelocation(inputFileLocation)
 
 
-def postprocessing_job_data(self, releaseFolderLocation, outputFolderLocation): 
+def postprocessing_job_data(task, releaseFolderLocation, outputFolderLocation): 
     #Used to set nessasary params for a Postprocessing job to be completed.
     #Postprocessing jobs may also have singluar params set via the set_'param' methods.
-    self.set_releasefolderlocation(releaseFolderLocation)
-    self.set_outputfolderlocation(outputFolderLocation)
+    task.set_releasefolderlocation(releaseFolderLocation)
+    task.set_outputfolderlocation(outputFolderLocation)
 
 
-
-
-
-def start_simulation_job(self):
-    #Queues up just the Simulation jobs to be completed using the jobs paramameters.
-    releaseFolderLocation = self.releasefolderlocation
-    seedList = self.seeds
-    p = get_priority(self)
-    subfolder = create_rep_folder_and_files(self)
-    pathName, folderName = os.path.split(subfolder)
-    queue_simulation_job(releaseFolderLocation, subfolder, folderName, seedList, priority=p)
-
-
-
-def start_postprocessing_job(self):
-    #Queues up just the Postproccesing jobs to be completed using the jobs paramameters.
-    releaseFolderLocation = self.releasefolderlocation
-    outputFolderLocation = self.outputfolderlocation
-    seedList = self.seeds
-    p = get_priority(self)
-    queue_postprocessing_job(releaseFolderLocation, outputFolderLocation, seedList, priority=p)
-
-
-
-def start_simulation_with_postprocessing_job(self):
-    releaseFolderLocation = self.releasefolderlocation
-    inputFile = self.inputfilelocation
-    seedList = self.seeds
-    allSimsFirst = self.allsimsfirst
-    p = get_priority(self)
-    subfolder = create_rep_folder_and_files(self)
-    pathName, folderName = os.path.split(subfolder)
-    scenarioName = get_output_folder(inputFile) 
-    if self.outputfolderlocation == None:
-        scenarioName = get_output_folder(inputFile) 
-        outputFolderLocation = os.path.join(releaseFolderLocation, 'Outputs', scenarioName)
-    else:
-        outputFolderLocation = self.outputfolderlocation
-    queue_simulation_with_postprocessing_job(releaseFolderLocation, subfolder, folderName, outputFolderLocation, allSimsFirst, seedList, priority=p)
-     
-
-
-
-def get_priority(self): 
-    if self.priority == None:
-        p=0
-    else:
-        p=self.priority
-    return p
-
-    
-    
-
-
-
-def set_seeds(self, seeds): 
+def set_seeds(task, seeds): 
     #Sets seeds list, input should be a string. Inputs can be as follows:
     #('First seed, Last seed, 0')  0 as last seed creates a loop from first to last.
     #('First seed, Last seed, Step, 0')   0 as last seed creates a loop from first to last. Stepping through by step seed amount.
@@ -117,34 +62,71 @@ def set_seeds(self, seeds):
         for x in range(start,stop+1,step):
             xList = str(x)
             seedList.append(xList)
-        self.set_seeds(seedList)
+        task.set_seeds(seedList)
     elif (len(seeds) == 3) and (lastSeed == 0):
         start = eval(seeds[0])
         stop = eval(seeds[1])
         for x in range(start,stop+1):
             xList = str(x)
             seedList.append(xList)
-        self.set_seeds(seedList)
+        task.set_seeds(seedList)
     else:
-         self.set_seeds(seeds)
-
-
-
-def print_seeds(self): 
-    #Used to test seed list input.
-
-    seedList = self.seeds
-    for i in seedList:
-        seed = eval(i)
-        print(seed)
-
-    
+         task.set_seeds(seeds)
 
 
 
 
-def create_output_folders(self, seed):
-    outputLocation = self.outputfolderlocation
+#The following functions are used to send tasks to the queueing functions with the right params.
+
+
+def start_simulation_job(task):
+    #Queues up just the Simulation jobs to be completed using the jobs paramameters.
+    releaseFolderLocation = task.releasefolderlocation
+    seedList = task.seeds
+    p = get_priority(task)
+    subfolder = create_rep_folder_and_files(task)
+    pathName, folderName = os.path.split(subfolder)
+    queuemanager.queue_simulation_job(releaseFolderLocation, subfolder, folderName, seedList, priority=p)
+
+
+
+def start_postprocessing_job(task):
+    #Queues up just the Postproccesing jobs to be completed using the jobs paramameters.
+    releaseFolderLocation = task.releasefolderlocation
+    outputFolderLocation = task.outputfolderlocation
+    seedList = task.seeds
+    p = get_priority(task)
+    queuemanager.queue_postprocessing_job(releaseFolderLocation, outputFolderLocation, seedList, priority=p)
+
+
+
+def start_simulation_with_postprocessing_job(task):
+    releaseFolderLocation = task.releasefolderlocation
+    inputFile = task.inputfilelocation
+    seedList = task.seeds
+    allSimsFirst = task.allsimsfirst
+    p = get_priority(task)
+    subfolder = create_rep_folder_and_files(task)
+    pathName, folderName = os.path.split(subfolder)
+    scenarioName = get_output_folder(inputFile) 
+    if task.outputfolderlocation == None:
+        scenarioName = get_output_folder(inputFile) 
+        outputFolderLocation = os.path.join(releaseFolderLocation, 'Outputs', scenarioName)
+    else:
+        outputFolderLocation = task.outputfolderlocation
+    queuemanager.queue_simulation_with_postprocessing_job(releaseFolderLocation, subfolder, folderName, outputFolderLocation, allSimsFirst, seedList, priority=p)
+     
+
+
+
+
+
+
+
+#The following functions are used to create output folders and input files for number of seeds.
+
+def create_output_folders(task, seed):
+    outputLocation = task.outputfolderlocation
     folderSeed = str(seed)
     subfolder = os.path.join(outputLocation, folderSeed)
     if os.path.isdir(subfolder):
@@ -153,12 +135,10 @@ def create_output_folders(self, seed):
 
 
 
-
-
-def create_rep_folder_and_files(self):
+def create_rep_folder_and_files(task):
     #Used to create temp folder for input files.
-    inputFile = self.inputfilelocation
-    seedList = self.seeds
+    inputFile = task.inputfilelocation
+    seedList = task.seeds
     folder, fileName = os.path.split(inputFile)
     subfolderName = os.path.splitext(fileName)[0]
     subfolder = os.path.join(folder,  subfolderName)
@@ -204,6 +184,13 @@ def create_rep_files(folder, fileName, originalFile, num_rep):
 
 
 
+
+
+
+
+#The following functions are used to get specific params.
+
+
 def get_output_folder(originalFile):
 
     try:
@@ -222,3 +209,23 @@ def get_output_folder(originalFile):
         print("Error found when trying to read file",originalFile," ....\n")
         print("*** Ending script, no outputs generated ***\n")
         sys.exit(1)
+
+
+
+
+def get_priority(task): 
+    if task.priority == None:
+        p=0
+    else:
+        p=task.priority
+    return p
+
+
+
+def print_seeds(task): 
+    #Used to test seed list input.
+
+    seedList = task.seeds
+    for i in seedList:
+        seed = eval(i)
+        print(seed)
