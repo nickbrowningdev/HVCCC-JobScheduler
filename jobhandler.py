@@ -13,9 +13,11 @@ import job
 import queuemanager
 
 
+
+#Testing input examples.
 #J1 = SimulationWithPostprocessingJob()
 #simulation_job_data(J1, r"C:\Users\enjib\Desktop\ewocc_demo_v48.3", r"C:\Users\enjib\Desktop\ewocc_demo_v48.3\Inputs\scenario1.xml")
-#set_seeds(J1,'1,1,0')
+#set_seeds(J1,'1,3,0')
 #start_simulation_with_postprocessing_job(J1)
 
 
@@ -123,7 +125,7 @@ def start_simulation_with_postprocessing_job(task):
 
 
 
-#The following functions are used to create output folders and input files for number of seeds.
+#The following functions are used to create output folders and input files for number of seeds.(Used only by this file)
 
 def create_output_folders(task, seed):
     outputLocation = task.outputfolderlocation
@@ -188,7 +190,7 @@ def create_rep_files(folder, fileName, originalFile, num_rep):
 
 
 
-#The following functions are used to get specific params.
+#The following functions are used to get specific params.(Used only by this file)
 
 
 def get_output_folder(originalFile):
@@ -221,11 +223,3 @@ def get_priority(task):
     return p
 
 
-
-def print_seeds(task): 
-    #Used to test seed list input.
-
-    seedList = task.seeds
-    for i in seedList:
-        seed = eval(i)
-        print(seed)
