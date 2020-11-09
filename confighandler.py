@@ -1,9 +1,6 @@
 # I must confess I have no idea what config parameters we need yet - probably stuff related to client server architecture, as a start
 
 
-
-
-
 class ConfigHandler():
 
     def __init__(self):

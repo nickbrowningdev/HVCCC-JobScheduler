@@ -75,9 +75,6 @@ class SimulationJob(Job):
     def set_seeds(self, seeds):
         self.seeds = seeds
 
-
-
-
 class PythonScriptJob(Job):
     
     name = "Python Script Job"
@@ -127,7 +124,6 @@ class PostprocessingJob(Job):
         
     def set_warmup(self, warmup):
         self.warmup = warmup
-
         
 class SimulationWithPostprocessingJob(SimulationJob, PostprocessingJob):
 

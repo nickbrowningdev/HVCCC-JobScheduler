@@ -1,5 +1,9 @@
 # Nick's stuff to be refactored into class and go in here
 
+import job
+import queuemanager
+import jobhandler
+
 class CommandLineInterface():
 
     def __init__(self, hub):
@@ -42,43 +46,57 @@ class CommandLineInterface():
         if user_input == 'quit':
             return False
         return user_input
-        
-        
-    def example_menu2(self):
-        #if user chooses quit return False, else do stuff and return True
-        pass
-    
+
+    def submit_seeds(self):
+        seeds = input("Enter seeds (for example - 1,1,0): ")
+        return seeds
+
+    def submit_scenario(self):
+        scenario = input("Enter scenario (for example - scenario1 or scenario2): ")
+        return scenario
     
     def example_top_menu(self):
+        def handle_choice_X():
+            #do stuff
+            print("Submitting Simulation Job")
+            seeds = self.submit_seeds()
+            scenario = self.submit_scenario()
+            self.hub.submit_simulation_job(seeds, scenario)
+            return True
             
         def handle_choice_Y():
             #do stuff
-            print("Doing something with choice Y")
+            print("Submitting Post-processing Job")
+            seeds = self.submit_seeds()
+            scenario = self.submit_scenario()
+            self.hub.submit_postprocessing_job(seeds, scenario)
             return True
 
         def handle_choice_Z():
             #do stuff
-            print("Doing something with choice Z")
+            print("Submitting Simulation with Post-processing Job")
+            seeds = self.submit_seeds()
+            scenario = self.submit_scenario()
+            self.hub.submit_simulation_with_postprocessing_job(seeds, scenario)
             return True
             
         instruction = "Please enter an option from this example menu"
         example_options = {  #using dictionary to map option ids to option descriptions
-            "X": "Description for X",
-            "Y": "Description for Y",
-            "Z": "Description for Z",
+            "X": "Submit Simulation Job",
+            "Y": "Submit Post-processing Job",
+            "Z": "Submit Simulation with Post-processing Job",
         }
         user_input = self.get_user_input(instruction, example_options.keys(), example_options.values())
         if user_input is False:  #this is case when user wants to quit
             return False
         else:
             choice_function = {  #maps user's choice to an action, may be nested function or normal function
-                "X": self.example_menu2,  
+                "X": handle_choice_X,  
                 "Y": handle_choice_Y,
                 "Z": handle_choice_Z,
             }
             _continue = choice_function[user_input]() #execute chosen action
             return _continue
-        
     
     def job_menu(self):
         job_types = self.hub.get_job_types()

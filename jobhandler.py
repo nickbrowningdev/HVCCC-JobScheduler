@@ -12,15 +12,6 @@ from tkinter import filedialog, messagebox
 import job
 import queuemanager
 
-
-
-#Testing input examples.
-#J1 = SimulationWithPostprocessingJob()
-#simulation_job_data(J1, r"C:\Users\enjib\Desktop\ewocc_demo_v48.3", r"C:\Users\enjib\Desktop\ewocc_demo_v48.3\Inputs\scenario1.xml")
-#set_seeds(J1,'1,3,0')
-#start_simulation_with_postprocessing_job(J1)
-
-
 class JobHandler():
 
     def __init__(self):
@@ -28,9 +19,6 @@ class JobHandler():
     
     def get_job_types(self):
         return job.get_job_types()
-
-
-
 
 #The following functions are used to set data for specific tasks.
 
@@ -75,22 +63,16 @@ def set_seeds(task, seeds):
     else:
          task.set_seeds(seeds)
 
-
-
-
 #The following functions are used to send tasks to the queueing functions with the right params.
-
-
 def start_simulation_job(task):
     #Queues up just the Simulation jobs to be completed using the jobs paramameters.
     releaseFolderLocation = task.releasefolderlocation
     seedList = task.seeds
     p = get_priority(task)
+    print("Priority of Simulation Job:", p)
     subfolder = create_rep_folder_and_files(task)
     pathName, folderName = os.path.split(subfolder)
     queuemanager.queue_simulation_job(releaseFolderLocation, subfolder, folderName, seedList, priority=p)
-
-
 
 def start_postprocessing_job(task):
     #Queues up just the Postproccesing jobs to be completed using the jobs paramameters.
@@ -98,6 +80,7 @@ def start_postprocessing_job(task):
     outputFolderLocation = task.outputfolderlocation
     seedList = task.seeds
     p = get_priority(task)
+    print("Priority of Post-Processing Job:", p)
     queuemanager.queue_postprocessing_job(releaseFolderLocation, outputFolderLocation, seedList, priority=p)
 
 
@@ -108,6 +91,7 @@ def start_simulation_with_postprocessing_job(task):
     seedList = task.seeds
     allSimsFirst = task.allsimsfirst
     p = get_priority(task)
+    print("Priority of Simulation with Post-Processing Job:", p)
     subfolder = create_rep_folder_and_files(task)
     pathName, folderName = os.path.split(subfolder)
     scenarioName = get_output_folder(inputFile) 
@@ -117,13 +101,6 @@ def start_simulation_with_postprocessing_job(task):
     else:
         outputFolderLocation = task.outputfolderlocation
     queuemanager.queue_simulation_with_postprocessing_job(releaseFolderLocation, subfolder, folderName, outputFolderLocation, allSimsFirst, seedList, priority=p)
-     
-
-
-
-
-
-
 
 #The following functions are used to create output folders and input files for number of seeds.(Used only by this file)
 
@@ -134,8 +111,6 @@ def create_output_folders(task, seed):
     if os.path.isdir(subfolder):
         shutil.rmtree(subfolder)
     os.mkdir(subfolder)
-
-
 
 def create_rep_folder_and_files(task):
     #Used to create temp folder for input files.
@@ -155,15 +130,12 @@ def create_rep_folder_and_files(task):
     
     return subfolder
 
-
-
 def create_rep_files(folder, fileName, originalFile, num_rep):
     #Used to create input file for each of the starting seeds.
     try:
         parser = etree.XMLParser(remove_blank_text=True)
         tree = etree.parse(originalFile, parser)
         root = tree.getroot()
-
 
         for rep in range(num_rep, num_rep + 1):
             for par in root.find("runParameters").findall("runParameter"):
@@ -183,16 +155,7 @@ def create_rep_files(folder, fileName, originalFile, num_rep):
         print("*** Ending script, no outputs generated ***\n")
         sys.exit(1)
 
-
-
-
-
-
-
-
 #The following functions are used to get specific params.(Used only by this file)
-
-
 def get_output_folder(originalFile):
 
     try:
@@ -212,9 +175,6 @@ def get_output_folder(originalFile):
         print("*** Ending script, no outputs generated ***\n")
         sys.exit(1)
 
-
-
-
 def get_priority(task): 
     if task.priority == None:
         p=0
@@ -223,3 +183,17 @@ def get_priority(task):
     return p
 
 
+#J1 = job.SimulationJob()
+# simulation_job_data(J1, r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3", r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3\Inputs\scenario2.xml")
+#set_seeds(J1,'1,1,0')
+#start_simulation_job(J1)
+
+#J2 = job.SimulationWithPostprocessingJob()
+# simulation_job_data(J2, r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3", r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3\Inputs\scenario1.xml")
+#set_seeds(J2,'2,3,1')
+# start_simulation_with_postprocessing_job(J2)
+
+# J3 = job.PostprocessingJob()
+# postprocessing_job_data(J3, r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3", r"C:\Users\nbwre\Documents\HVCCC\ewocc_demo_v48.3\Inputs\scenario1.xml")
+# set_seeds(J3,'1,3,0')
+# start_postprocessing_job(J3)
